@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Karten Wahrscheinlichkeiten</title>
+  <style>
+    body {
+      background: #e0e0e0;
+      color: #333;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 22px;
+      padding: 30px;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .card-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: #e0e0e0;
+      border-radius: 15px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 130px;
+      box-shadow: 7px 7px 15px #bebebe,
+                  -7px -7px 15px #ffffff;
+    }
+
+    .card-number {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .count-display {
+      font-size: 24px;
+      margin: 8px 0;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      background: #e0e0e0;
+      border: none;
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      box-shadow: 4px 4px 10px #bebebe,
+                  -4px -4px 10px #ffffff;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:active {
+      box-shadow: inset 3px 3px 8px #bebebe,
+                  inset -3px -3px 8px #ffffff;
+    }
+
+    .info-text {
+      font-size: 18px;
+      text-align: center;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .reset-button {
+      font-size: 20px;
+      background: #e0e0e0;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 25px;
+      box-shadow: 6px 6px 12px #bebebe,
+                  -6px -6px 12px #ffffff;
+      cursor: pointer;
+      color: #333;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 30px;
+      transition: all 0.2s ease;
+    }
+
+    .reset-button:active {
+      box-shadow: inset 4px 4px 10px #bebebe,
+                  inset -4px -4px 10px #ffffff;
+    }
+
+    .center-btn {
+      text-align: center;
+    }
+
+    .result {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Karten Wahrscheinlichkeitsrechner</h1>
+  <p style="text-align: center">Klicke +/– um gesehene Karten zu markieren. Wahrscheinlichkeiten aktualisieren sich automatisch.</p>
+
+  <div class="card-controls" id="cards"></div>
+
+  <div class="center-btn">
+    <button class="reset-button" onclick="resetAll()">🔄 Deck mischen</button>
+  </div>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    const totalCounts = Array.from({ length: 13 }, (_, i) => i === 0 ? 1 : i);
+    const seenCounts = Array(13).fill(0);
+
+    const cardsDiv = document.getElementById('cards');
+
+    for (let i = 0; i <= 12; i++) {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const number = document.createElement('div');
+      number.className = 'card-number';
+      number.textContent = i;
+
+      const countDisplay = document.createElement('div');
+      countDisplay.className = 'count-display';
+      countDisplay.id = 'count' + i;
+      countDisplay.textContent = '0';
+
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'button-group';
+
+      const btnMinus = document.createElement('button');
+      btnMinus.className = 'btn';
+      btnMinus.textContent = '-';
+      btnMinus.onclick = () => updateCount(i, -1);
+
+      const btnPlus = document.createElement('button');
+      btnPlus.className = 'btn';
+      btnPlus.textContent = '+';
+      btnPlus.onclick = () => updateCount(i, 1);
+
+      btnGroup.appendChild(btnMinus);
+      btnGroup.appendChild(btnPlus);
+
+      const info = document.createElement('div');
+      info.className = 'info-text';
+      info.id = 'info' + i;
+
+      card.appendChild(number);
+      card.appendChild(countDisplay);
+      card.appendChild(btnGroup);
+      card.appendChild(info);
+
+      cardsDiv.appendChild(card);
+    }
+
+    function updateCount(index, delta) {
+      const max = totalCounts[index];
+      seenCounts[index] = Math.min(max, Math.max(0, seenCounts[index] + delta));
+      document.getElementById('count' + index).textContent = seenCounts[index];
+      calculate();
+    }
+
+    function calculate() {
+      const remainingCounts = [];
+      let totalRemaining = 0;
+
+      for (let i = 0; i <= 12; i++) {
+        const remaining = totalCounts[i] - seenCounts[i];
+        remainingCounts[i] = Math.max(0, remaining);
+        totalRemaining += remainingCounts[i];
+      }
+
+      for (let i = 0; i <= 12; i++) {
+        const chance = totalRemaining > 0 ? (remainingCounts[i] / totalRemaining * 100).toFixed(1) : '0.0';
+        const info = document.getElementById('info' + i);
+        info.textContent = `${chance}%  |  #${remainingCounts[i]}`;
+      }
+
+      document.getElementById('result').textContent = `Gesamte verbleibende Karten: ${totalRemaining}`;
+    }
+
+    function resetAll() {
+      for (let i = 0; i <= 12; i++) {
+        seenCounts[i] = 0;
+        document.getElementById('count' + i).textContent = '0';
+      }
+      calculate();
+    }
+
+    calculate();
+  </script>
+
+</body>
+</html>
