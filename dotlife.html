@@ -122,10 +122,24 @@
       padding: 15px 30px;
       border: none;
       background: var(--bg-color);
-      box-shadow: 8px 8px 16px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
       border-radius: 15px;
       cursor: pointer;
       font-size: 2.5rem;
+      color: #333;
+      box-shadow: 10px 10px 20px #bebebe,
+                  -10px -10px 20px #ffffff;
+      transition: all 0.2s ease;
+
+    }
+
+    .add-button:hover {
+      box-shadow: inset 5px 5px 15px #bebebe,
+                  inset -5px -5px 15px #ffffff;
+    }
+
+    .edit-button:hover {
+      box-shadow: inset 5px 5px 15px #bebebe,
+                  inset -5px -5px 15px #ffffff;
     }
 
     .hidden {
@@ -211,10 +225,18 @@
       border: none;
       padding: 15px 30px;
       border-radius: 15px;
-      box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
       cursor: pointer;
       font-family: 'Visby Round', sans-serif;
       margin-top: 10px;
+      color: #333;
+      box-shadow: 10px 10px 20px #bebebe,
+                  -10px -10px 20px #ffffff;
+      transition: all 0.2s ease;
+    }
+
+    .popup-buttons button:hover {
+      box-shadow: inset 5px 5px 15px #bebebe,
+                  inset -5px -5px 15px #ffffff;
     }
 
     .footer {
