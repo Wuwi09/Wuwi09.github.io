@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DotLife</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20width%3D%2224%22%20height%3D%2224%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20fill%3D%22%23ff6f61%22/%3E%3C/svg%3E" />
+
+  <style>
+    /* Import the Visby Round font using @font-face */
+    @font-face {
+      font-family: 'Visby Round';
+      src: url('fonts/VisbyRoundCF-Medium.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --bg-color: #e0e0e0;
+      --shadow-light: #ffffff;
+      --shadow-dark: #bebebe;
+      --dot-color: #ff6f61;
+    }
+    
+    html{
+      overflow: hidden;
+    }
+    
+    body {
+      font-family: 'Visby Round', sans-serif;
+      background: var(--bg-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-size: 3rem;
+      /*overflow: auto;*/
+      overflow-x: hidden;
+      transition: filter 0.7s ease-in-out;
+      scroll-behavior: smooth;
+      margin-left: -2px;
+    }
+
+    .neomorphic {
+      background: var(--bg-color);
+      box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+      border-radius: 15px;
+      padding: 15px;
+      margin: 20px;
+      text-align: center;
+      max-width: 90vw;
+      word-break: break-word;
+      font-size: 2.5rem;
+    }
+
+    .header {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 15px; /* Reduced padding */
+      font-size: 2.5rem; /* Smaller font size */
+      max-height: 5vh; /* Restrict height */
+      overflow: hidden; /* Allow scroll if content exceeds height */
+    }
+
+    h1 {
+      font-size: 6rem; /* Increased font size for the title */
+      margin: 0;
+      text-align: center;
+      white-space: nowrap;
+      margin-bottom: 50px; /* Added margin to create more space between the title and the cards */
+    }
+
+
+    .Container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 90%;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+
+    .dots {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      justify-content: center;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      max-width: 90vw;
+    }
+
+    .dot-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dot-label {
+      margin-bottom: 10px;
+    }
+
+    .dot {
+      border-radius: 50%;
+      background-color: var(--dot-color);
+      box-shadow: inset 1px 1px 3px var(--shadow-dark), inset -1px -1px 3px var(--shadow-light);
+    }
+
+    .dot.year { width: 30px; height: 30px; }
+    .dot.month { width: 24px; height: 24px; }
+    .dot.week { width: 20px; height: 20px; }
+    .dot.day { width: 16px; height: 16px; }
+
+    .add-button, .edit-button {
+      padding: 15px 30px;
+      border: none;
+      background: var(--bg-color);
+      box-shadow: 8px 8px 16px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 2.5rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .input-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-color);
+      box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      font-size: 3rem;
+      z-index: 10;
+      width: 100%;
+      max-width: 500px;
+      pointer-events: all;
+      border: 5px solid transparent;
+      box-shadow: 0 0 0 10px var(--bg-color), inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+    }
+
+    .edit-popup {
+      margin:auto;
+      overflow-y: hidden;
+      overflow-x: hidden;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-color);
+      box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      font-size: 3rem;
+      z-index: 10;
+      width: 100%;
+      max-width: 500px;
+      pointer-events: all;
+      border: 5px solid transparent;
+      box-shadow: 0 0 0 10px var(--bg-color), inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+    }
+
+    .input-popup input[type="text"] {
+      font-family: 'Visby Round', sans-serif;
+      font-size: 3rem;
+      margin: 20px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: var(--bg-color);
+      box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+    }
+
+    .neomorphic-date-picker {
+      -webkit-appearance: none;
+      appearance: none;
+      font-size: 3rem;
+      margin: 20px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: var(--bg-color);
+      box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+      color: #333;
+      text-align: center;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .input-popup input[type="text"]#counterLabel {
+      width: 100%;
+      max-width: 250px;
+    }
+
+
+    .popup-buttons button {
+      background: var(--bg-color);
+      border: none;
+      padding: 15px 30px;
+      border-radius: 15px;
+      box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+      cursor: pointer;
+      font-family: 'Visby Round', sans-serif;
+      margin-top: 10px;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .blur-background *:not(.input-popup):not(.input-popup *):not(.edit-popup):not(.edit-popup *) {
+      filter: blur(20px);
+      pointer-events: none;
+    }
+
+    .input-popup {
+      pointer-events: all;
+      font-size: 2rem;
+      padding:20px;
+      max-width: 72%;
+      text-align: center;
+      margin:auto;
+      position: absolute;
+      overflow-y: hidden;
+      overflow-x: hidden;
+      width: 415px;
+    }
+
+    .container::-webkit-scrollbar {
+    display: none;
+    }
+
+    .container {
+      overflow: hidden;
+      overflow-y: scroll;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+
+    
+
+    @media (max-width: 768px) {
+  body {
+    font-size: 2rem;
+  }
+
+  .add-button, .edit-button {
+    font-size: 2rem;
+    padding: 10px 20px;
+  }
+
+  .input-popup {
+    font-size: 2rem;
+    padding: 20px;
+  }
+
+  .input-popup input[type="text"],
+  .neomorphic-date-picker {
+    font-size: 2rem;
+  }
+
+  .edit-buttons {
+    font-size: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* abstand zwischen den buttons */
+  }
+
+  .popup-buttons {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* abstand zwischen den buttons */
+  }
+
+  .popup-buttons button {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* abstand zwischen den buttons */
+    font-size: 2rem;
+    padding: 10px 20px;
+  }
+
+  .dot.year { width: 24px; height: 24px; }
+  .dot.month { width: 20px; height: 20px; }
+  .dot.week { width: 16px; height: 16px; }
+  .dot.day { width: 12px; height: 12px; }
+}
+
+.counterLabel {
+  font-size: 3rem;
+  word-break: break-word;
+  text-align: center;
+  hyphens: auto;
+}
+
+.h2header {
+  font-size: 4rem;
+  margin-top: -10px;
+  text-align: center;
+  margin-bottom: -10px;   
+}
+
+
+
+
+
+  </style>
+</head>
+<body>
+  <h1>DotLife</h1>
+  <div class="Container" id="Container"></div>
+  
+  <div class="footer">
+    <button class="add-button" onclick="showAddPopup()">Add</button>
+    <button class="edit-button" onclick="startCardSelectionForEdit()">Edit</button>
+  </div>
+
+  <div id="addPopup" class="input-popup hidden">
+    <input type="text" class="neomorphic-date-picker" id="targetDate" maxlength="10" placeholder="DD/MM/YYYY" oninput="formatDateInput(this)" />
+    <input type="text" id="counterLabel" placeholder="Label" />
+    <div class="popup-buttons">
+      <button class="popup-buttons" onclick="addCounter()">OK</button>
+      <button class="popup-buttons" onclick="closeAddPopup()">Cancel</button>
+    </div>
+  </div>
+
+  <div id="editPopup" class="edit-popup hidden">
+    <div class="popup-buttons">
+      <button class="popup-buttons" onclick="closeEditPopup()">OK</button>
+    </div>
+  </div>
+
+  <div id="editCardPopup" class="edit-popup hidden">
+    <div class="popup-buttons">
+    </div>
+  </div>
+  <script>
+    let counters = [];
+
+    function showAddPopup() {
+      document.getElementById('addPopup').classList.remove('hidden');
+      document.body.classList.add('blur-background');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeAddPopup() {
+      document.getElementById('addPopup').classList.add('hidden');
+      document.body.classList.remove('blur-background');
+      document.body.style.overflow = 'auto';
+    }
+
+    function formatDateForDisplay(date) {
+      const d = new Date(date);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    function formatDateInput(input) {
+      let value = input.value.replace(/\D/g, '');
+      if (value.length <= 2) {
+        value = value.replace(/(\d{2})/, '$1');
+      } else if (value.length <= 4) {
+        value = value.replace(/(\d{2})(\d{2})/, '$1/$2');
+      } else {
+        value = value.replace(/(\d{2})(\d{2})(\d{4})/, '$1/$2/$3');
+      }
+      input.value = value;
+    }
+
+    function addCounter() {
+      const dateInput = document.getElementById('targetDate');
+      const labelInput = document.getElementById('counterLabel');
+      const dateParts = dateInput.value.split('/');
+
+      if (dateParts.length !== 3) return alert('Invalid date format');
+      
+      const targetDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+      targetDate.setHours(0, 0, 0, 0);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+
+      if (isNaN(targetDate)) return alert('Invalid date');
+      if (targetDate <= now) return alert('Date must be in the future');
+
+      const counter = {
+        id: Date.now(),
+        targetDate,
+        label: labelInput.value || 'Unnamed'
+      };
+
+      counters.push(counter);
+      closeAddPopup();
+      renderCounters();
+    }
+
+    function renderCounters() {
+      const container = document.getElementById('Container');
+      container.innerHTML = '';
+      let cardId = 0;
+      counters.forEach(counter => {
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        const msDiff = counter.targetDate - now;
+
+        const monthsLeft = Math.floor(msDiff / (1000 * 60 * 60 * 24 * 30));
+        const remainingWeeks = Math.floor((msDiff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24 * 7));
+        const remainingDays = Math.floor((msDiff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24));
+
+        const dotElement = document.createElement('div');
+        dotElement.id = cardId;
+        dotElement.className = 'neomorphic';
+
+        cardId++;
+
+        const label = document.createElement('h2');
+        label.className = 'counterLabel'; // <--- HINZUGEFÜGT
+        label.innerText = counter.label;
+
+        const timeLeft = document.createElement('p');
+        timeLeft.innerText = formatTimeText(msDiff);
+
+        const dots = document.createElement('div');
+        dots.className = 'dots';
+
+        const timeGroups = [
+          { value: monthsLeft, className: 'month' },
+          { value: remainingWeeks, className: 'week' },
+          { value: remainingDays, className: 'day' },
+        ];
+
+        timeGroups.forEach(group => {
+          const groupLabel = document.createElement('div');
+          groupLabel.className = 'dot-label';
+          groupLabel.innerText = group.className.charAt(0).toUpperCase() + group.className.slice(1);
+
+          const groupContainer = document.createElement('div');
+          groupContainer.className = 'dot-group';
+
+          for (let i = 0; i < group.value; i++) {
+            const dot = document.createElement('div');
+            dot.className = `dot ${group.className}`;
+            groupContainer.appendChild(dot);
+          }
+
+          dots.appendChild(groupLabel);
+          dots.appendChild(groupContainer);
+        });
+
+        dotElement.appendChild(label);
+        dotElement.appendChild(timeLeft);
+        dotElement.appendChild(dots);
+        container.appendChild(dotElement);
+        
+
+      });
+      
+      adjustLabelFontSize();
+
+        // Disable scrolling if only one card is present
+        const cards = container.querySelectorAll('.neomorphic');
+        if (cards.length > 1) {
+            container.style.overflowY = 'auto';
+        } else {
+            container.style.overflowY = 'hidden';
+        }
+
+    }
+
+    function formatTimeText(ms) {
+      
+      
+      let seconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      const dateMs = new Date();
+      const nowPlusMs = dateMs.setDate(dateMs.getDate() + days)
+  // Calculate years, months, and weeks
+      const years = Math.floor(days / 365);
+      const months = getMonthsBetweenDates(new Date(), dateMs);
+      const weeks = Math.floor((days % 30) / 7);
+      const remDays = days % 7;
+
+      let result = [];
+      if (years) result.push(`${years} year${years > 1 ? 's' : ''}`);
+      if (months) result.push(`${months} month${months > 1 ? 's' : ''}`);
+      if (weeks) result.push(`${weeks} week${weeks > 1 ? 's' : ''}`);
+      if (remDays) result.push(`${remDays} day${remDays > 1 ? 's' : ''}`);
+      return result.join(' ');
+    }
+
+    function getMonthsBetweenDates(startDate, endDate) {
+      // Ensure the end date is later than the start date
+      const laterDate = startDate > endDate ? startDate : endDate;
+      const earlierDate = startDate > endDate ? endDate : startDate;
+  
+      const monthsDifference = laterDate.getMonth() - earlierDate.getMonth() + 12 * (laterDate.getFullYear() - earlierDate.getFullYear());
+
+      // Adjust for full years in the month count and the number of days left
+      if (laterDate.getDate() < earlierDate.getDate()) {
+        return monthsDifference - 1;
+      }
+      return monthsDifference;
+    }
+
+    function adjustLabelFontSize() {
+      const labels = document.querySelectorAll('.counterLabel');
+      if (labels.length === 0) return;
+      let smallestFontSize = 48; // startwert in px
+      let longestWord = '';
+
+      // finde das längste wort über alle labels
+      labels.forEach(label => {
+        const words = label.innerText.split(' ');
+        words.forEach(word => {
+          if (word.length > longestWord.length) {
+            longestWord = word;
+          }
+        });
+      });
+
+      if (!longestWord) return;
+
+      let parentWidth = labels[0].parentElement.offsetWidth - 40; // etwas rand abziehen
+
+      const tempSpan = document.createElement('span');
+      tempSpan.style.visibility = 'hidden';
+      tempSpan.style.position = 'absolute';
+      tempSpan.style.whiteSpace = 'nowrap';
+      tempSpan.style.fontSize = `${smallestFontSize}px`;
+      tempSpan.innerText = longestWord;
+      document.body.appendChild(tempSpan);
+
+      while (tempSpan.offsetWidth > parentWidth && smallestFontSize > 10) {
+        smallestFontSize--;
+        tempSpan.style.fontSize = `${smallestFontSize}px`;
+      }
+
+      tempSpan.remove();
+
+      // jetzt ALLE labels auf dieselbe schriftgröße setzen
+      labels.forEach(label => {
+        label.style.fontSize = `${smallestFontSize}px`;
+      });
+    }
+
+    function startCardSelectionForEdit() {
+      document.getElementById('editPopup').classList.remove('hidden');
+      document.body.classList.add('blur-background');
+      document.body.style.overflow = 'hidden';
+      
+      clearEditPopupButtons(); // Clear existing buttons
+      populateEditPopup(); // Populate with new buttons
+
+      function clearEditPopupButtons() {
+        const popup = document.getElementById('editPopup');
+        const buttonsContainer = popup.querySelector('.popup-buttons');
+        const allButtons = buttonsContainer.querySelectorAll('button');
+
+        allButtons.forEach(button => {
+          if (button.innerText !== 'OK') {
+            button.remove();
+          }
+        });
+      }
+
+
+      function populateEditPopup() {
+        const popup = document.getElementById('editPopup');
+        const existingOkButton = popup.querySelector('.popup-buttons button');
+        const buttonsContainer = popup.querySelector('.popup-buttons');
+        // alle zusätzlichen Buttons vor dem OK-Button einfügen
+        const cards = document.querySelectorAll('.neomorphic');
+        cards.forEach((card, index) => {
+        const label = card.querySelector('.counterLabel').innerText;
+
+          const newButton = existingOkButton.cloneNode(true); // Button klonen
+          newButton.classList.add('edit-buttons'); 
+          newButton.classList.remove('popup-buttons'); // Klasse entfernen, damit der Button nicht mehr wie der OK-Button aussieht
+          newButton.classList.remove('hidden'); // Sichtbar machen
+          newButton.innerText = `${label}`; // Text anpassen
+          newButton.onclick = function() {
+            editSelectedCard(index); // eigene Funktion aufrufen
+          };
+          newButton.style.width = '100%'; // breite größer machen
+          newButton.style.marginBottom = '10px'; // bisschen Abstand
+
+          buttonsContainer.insertBefore(newButton, existingOkButton); // neuen Button VOR den OK-Button setzen
+        });
+      }
+    }
+
+    
+
+
+    function closeEditPopup() {
+      document.getElementById('editPopup').classList.add('hidden');
+      document.body.classList.remove('blur-background');
+      document.body.style.overflow = 'auto';
+    }
+
+    function closeEditCardPopup() {
+      document.getElementById('editCardPopup').classList.add('hidden');
+      document.body.classList.remove('blur-background');
+      document.body.style.overflow = 'auto';
+    }
+
+    function editSelectedCard(cardId) {
+      const EditPopup = document.getElementById('editCardPopup');
+      const EditPopupChild = document.getElementById('editCardPopup').firstChild;
+      const CardById = document.getElementById(cardId);
+      const EditLabel = CardById.firstChild;
+      const DeleteButton = document.createElement('button');
+      const label = document.createElement('h2');
+      closeEditPopup();
+      DeleteButton.onclick = function() {
+            removeCard(cardId);
+          };
+      DeleteButton.innerText = 'Delete';
+      DeleteButton.id = 'deleteButton';
+      document.getElementById('editCardPopup').classList.remove('hidden');
+      document.body.classList.add('blur-background');
+      document.getElementById('editCardPopup').firstElementChild.appendChild(DeleteButton);
+      
+      document.body.style.overflow = 'hidden';
+      label.innerText = EditLabel.innerText;
+      label.id = 'editLabel';
+      label.className = 'h2header';
+      EditPopup.insertBefore(label, EditPopupChild);
+    } 
+
+    function removeCard(cardId) {
+      const card = document.getElementById(cardId);
+      const deleteButton = document.getElementById('deleteButton');
+      const editLabel = document.getElementById('editLabel');
+      card.remove();
+      deleteButton.remove();
+      editLabel.remove();
+      counters = counters.filter(counter => counter.id !== parseInt(cardId));
+      adjustLabelFontSize(); // Adjust font size after removing a card
+      closeEditCardPopup();
+      delete counters[cardId];
+      counters.splice(cardId, 1)
+    }
+
+  </script>
+</body>
+</html>
