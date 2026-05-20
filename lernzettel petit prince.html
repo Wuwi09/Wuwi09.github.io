@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Petit Prince – Lernzettel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #1a1f3a;
+    --gold: #e8c96a;
+    --gold-pale: #f5e4a8;
+    --rose: #e8697a;
+    --text: #f0eadc;
+    --muted: #a89f8c;
+    --card: rgba(255,255,255,0.05);
+    --border: rgba(232,201,106,0.25);
+    --border-active: rgba(232,201,106,0.7);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--sky);
+    background-image: radial-gradient(ellipse at 20% 10%, #2d3b7a 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, #1a1230 0%, transparent 50%);
+    color: var(--text);
+    font-family: 'Source Serif 4', serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+    line-height: 1.7;
+  }
+  body::before {
+    content: '✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦';
+    position: fixed; top: 1rem; left: 0; right: 0;
+    text-align: center; font-size: 0.5rem;
+    color: rgba(255,251,230,0.3); letter-spacing: 1.5rem; pointer-events: none;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+
+  /* HEADER */
+  header { text-align: center; padding: 2rem 0 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+  .eyebrow { font-size: 0.7rem; letter-spacing: 0.25rem; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 6vw, 3.2rem); color: var(--gold-pale); line-height: 1.15; margin-bottom: 0.5rem; }
+  h1 em { font-style: italic; color: var(--gold); }
+  .subtitle { color: var(--muted); font-size: 0.85rem; letter-spacing: 0.05rem; }
+
+  /* LANG TOGGLE GLOBAL */
+  .lang-bar { display: flex; justify-content: flex-end; margin-bottom: 1.5rem; }
+  .lang-global-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--gold);
+    border-radius: 20px; padding: 0.35rem 1rem; font-size: 0.75rem;
+    letter-spacing: 0.08rem; cursor: pointer; font-family: 'Source Serif 4', serif;
+    transition: all 0.2s;
+  }
+  .lang-global-btn:hover { border-color: var(--gold); background: rgba(232,201,106,0.1); }
+
+  /* SECTIONS */
+  .section { margin-bottom: 2.2rem; }
+  .section-title {
+    font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold);
+    letter-spacing: 0.05rem; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* BILINGUAL TOGGLE CARD wrapper */
+  .bi { position: relative; cursor: pointer; }
+  .bi .lang-de, .bi .lang-fr { transition: opacity 0.15s; }
+  .bi .lang-fr { display: none; }
+  body.fr .bi .lang-de { display: none; }
+  body.fr .bi .lang-fr { display: block; }
+
+  /* for inline spans inside mixed blocks */
+  .de { }
+  .fr { display: none; }
+  body.fr .de { display: none; }
+  body.fr .fr { display: inline; }
+  body.fr .fr-block { display: block; }
+  .fr-block { display: none; }
+  body.fr .de-block { display: none; }
+
+  /* toggle pip on clickable cards */
+  .bi::after {
+    content: 'FR';
+    position: absolute; top: 0.5rem; right: 0.7rem;
+    font-size: 0.6rem; letter-spacing: 0.08rem;
+    color: rgba(232,201,106,0.4);
+    font-family: 'Source Serif 4', serif;
+    pointer-events: none;
+  }
+  body.fr .bi::after { content: 'DE'; }
+
+  /* PROSE BLOCK */
+  .prose-block {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 1.2rem 1.4rem; font-size: 0.88rem; color: #d4cebe; line-height: 1.75;
+  }
+  .prose-block + .prose-block { margin-top: 0.75rem; }
+  .prose-block:hover { border-color: var(--border-active); }
+
+  /* STEP LIST */
+  .step-list { display: flex; flex-direction: column; gap: 0.65rem; }
+  .step {
+    display: flex; gap: 0.9rem; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.85rem 1rem;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .step:hover { border-color: var(--border-active); }
+  .step-num { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.15rem; min-width: 1.5rem; line-height: 1.4; }
+  .step-text { font-size: 0.84rem; color: #ccc6b8; line-height: 1.65; }
+  .step-text strong { color: var(--gold-pale); font-weight: 400; }
+
+  /* PLANET GRID */
+  .planets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+  .planet-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 1rem 1.1rem 1rem; position: relative; overflow: hidden;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .planet-card:hover { border-color: var(--border-active); }
+  .planet-card::before {
+    content: attr(data-num); position: absolute; top: 0.5rem; right: 0.8rem;
+    font-family: 'Playfair Display', serif; font-size: 2rem;
+    color: rgba(232,201,106,0.1); font-weight: 700; line-height: 1;
+  }
+  .planet-name { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--gold-pale); margin-bottom: 0.25rem; }
+  .planet-who { font-size: 0.75rem; color: var(--rose); margin-bottom: 0.5rem; letter-spacing: 0.04rem; }
+  .planet-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+  .lecon { font-size: 0.75rem; color: var(--gold); margin-top: 0.5rem; font-style: italic; }
+
+  /* CHAR GRID */
+  .char-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .char-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 1rem 1.1rem; cursor: pointer; transition: border-color 0.2s;
+  }
+  .char-card:hover { border-color: var(--border-active); }
+  .char-name { font-family: 'Playfair Display', serif; color: var(--gold-pale); font-size: 0.95rem; margin-bottom: 0.4rem; }
+  .char-card ul { list-style: none; padding: 0; }
+  .char-card ul li { font-size: 0.8rem; color: var(--muted); padding: 0.12rem 0; }
+  .char-card ul li::before { content: '→ '; color: var(--gold); font-size: 0.7rem; }
+  .char-traits-fr { font-size: 0.78rem; color: var(--gold); font-style: italic; margin-top: 0.4rem; }
+
+  /* CARACT GUIDE */
+  .caract-steps { display: flex; flex-direction: column; gap: 0.6rem; }
+  .caract-step {
+    display: flex; gap: 0.9rem; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.85rem 1rem;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .caract-step:hover { border-color: var(--border-active); }
+  .caract-num { font-family: 'Playfair Display', serif; color: var(--rose); font-size: 1.1rem; min-width: 1.5rem; }
+  .caract-text { font-size: 0.84rem; color: #ccc6b8; line-height: 1.65; }
+  .caract-text strong { color: var(--gold-pale); font-weight: 400; }
+  .caract-text em { color: var(--muted); font-style: italic; font-size: 0.8rem; }
+
+  /* ROSE CARACT */
+  .rose-block {
+    background: rgba(232,105,122,0.07); border: 1px solid rgba(232,105,122,0.3);
+    border-radius: 10px; padding: 1.2rem 1.4rem;
+    font-size: 0.86rem; color: #d4cebe; line-height: 1.75;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .rose-block:hover { border-color: rgba(232,105,122,0.6); }
+  .rose-block strong { color: var(--rose); font-weight: 400; }
+
+  /* TIP BOX */
+  .tip-box {
+    border-left: 3px solid var(--rose); padding: 0.8rem 1rem;
+    background: rgba(232,105,122,0.07); border-radius: 0 8px 8px 0;
+    font-size: 0.83rem; color: #d4cebe; margin-top: 0.75rem;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .tip-box:hover { border-left-color: var(--gold); }
+  .tip-box strong { color: var(--rose); display: block; margin-bottom: 0.3rem; font-size: 0.72rem; letter-spacing: 0.06rem; text-transform: uppercase; }
+
+  /* VOCAB */
+  .vocab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .vocab-item {
+    background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.5rem 0.8rem; font-size: 0.8rem;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .vocab-item:hover { border-color: var(--border-active); }
+  .vocab-fr { color: var(--gold); font-style: italic; }
+  .vocab-de { color: var(--muted); font-size: 0.75rem; }
+
+  /* THEMES */
+  .themes-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  .theme-tag {
+    background: rgba(232,201,106,0.1); border: 1px solid rgba(232,201,106,0.3);
+    color: var(--gold); border-radius: 20px; padding: 0.25rem 0.75rem;
+    font-size: 0.75rem; letter-spacing: 0.04rem;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .theme-tag:hover { background: rgba(232,201,106,0.2); }
+
+  @media (max-width: 500px) {
+    .char-list { grid-template-columns: 1fr; }
+    .planets-grid { grid-template-columns: 1fr; }
+    .vocab-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="eyebrow">
+    <span class="de-block">Lernzettel · Französisch Klausur</span>
+    <span class="fr-block">Fiche de révision · Cours de français</span>
+  </div>
+  <h1><em>Le Petit Prince</em></h1>
+  <div class="subtitle">Antoine de Saint-Exupéry · Résumé &amp; Caractérisation</div>
+</header>
+
+<div class="lang-bar">
+  <button class="lang-global-btn" onclick="toggleLang()" id="globalBtn">🇫🇷 Tout en français</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     1. SCHRITT FÜR SCHRITT / PAS À PAS
+     ══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title">
+    <span class="de-block">Was passiert: Schritt für Schritt</span>
+    <span class="fr-block">Ce qui se passe: pas à pas</span>
+  </div>
+  <div class="step-list">
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">1</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Der Erzähler als Kind:</strong> Der Narrateur malt als Kind einen Elefanten in einer Boa-Schlange. Alle Erwachsenen sehen nur einen Hut. Er gibt das Zeichnen auf und wird Pilot. Das Bild steht für den Konflikt zwischen Kinderblick und Erwachsenendenken.</div>
+        <div class="lang-fr"><strong>Le narrateur enfant :</strong> Enfant, il dessine un éléphant dans un boa. Tous les adultes voient seulement un chapeau. Déçu, il abandonne le dessin et devient pilote. Cette image représente le conflit entre la vision des enfants et celle des adultes.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">2</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Notlandung in der Sahara:</strong> Das Flugzeug des Erzählers geht kaputt, er ist allein in der Wüste. Am nächsten Morgen weckt ihn eine kleine Stimme: <em>"S'il vous plaît, dessine-moi un mouton."</em> So trifft er den kleinen Prinzen zum ersten Mal.</div>
+        <div class="lang-fr"><strong>Atterrissage forcé dans le Sahara :</strong> L'avion du narrateur tombe en panne. Il est seul dans le désert. Le lendemain matin, une petite voix le réveille : <em>"S'il vous plaît, dessine-moi un mouton."</em> C'est ainsi qu'il rencontre le petit prince pour la première fois.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">3</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Der Asteroid B 612:</strong> Der Prinz erzählt von seiner Heimat. Er pflegt täglich drei Vulkane und bekämpft Baobab-Bäume, die seinen Planeten sprengen könnten. Dann erzählt er von der Rose: Sie wuchs plötzlich aus einem Samen, war wunderschön, aber auch arrogant und fordernd. Sie behauptete, stark zu sein, war aber eigentlich verletzlich. Der Prinz glaubt ihr nicht mehr und verlässt den Planeten.</div>
+        <div class="lang-fr"><strong>L'astéroïde B 612 :</strong> Le prince parle de chez lui. Il entretient trois volcans chaque jour et combat les baobabs qui pourraient détruire sa planète. Il parle aussi de la rose : elle a poussé soudainement d'une graine, était très belle mais arrogante et exigeante. Elle prétendait être forte, mais était en réalité fragile. Le prince ne la croit plus et quitte sa planète.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">4</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Planet 1 – Le Roi (325):</strong> Ein König sitzt allein auf seinem Planeten. Er will sofort über den Prinzen herrschen, gibt aber nur Befehle, die sowieso befolgt werden würden, zum Beispiel dass die Sonne untergeht, aber erst abends. Der Prinz findet das sinnlos und geht weiter.</div>
+        <div class="lang-fr"><strong>Planète 1 – Le Roi (325) :</strong> Un roi est seul sur sa planète. Il veut immédiatement gouverner le prince, mais il ne donne que des ordres qui seraient de toute façon suivis, par exemple que le soleil se couche, mais seulement le soir. Le prince trouve cela absurde et repart.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">5</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Planet 2 – Le Vaniteux (326):</strong> Der Eitle will nur bewundert werden. Er hört nichts außer Applaus. Der Prinz klatscht einmal und der Mann strahlt. Ein echtes Gespräch ist unmöglich. Der Prinz geht enttäuscht weiter.</div>
+        <div class="lang-fr"><strong>Planète 2 – Le Vaniteux (326) :</strong> Le vaniteux ne veut qu'être admiré. Il n'entend rien d'autre que les applaudissements. Le prince applaudit une fois, l'homme rayonne. Une vraie conversation est impossible. Le prince repart déçu.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">6</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Planet 3 – Le Buveur (327):</strong> Der Trinker trinkt, um zu vergessen, dass er trinkt. Er gibt das selbst zu. Der Prinz findet ihn tief traurig, versteht die Logik aber nicht. Dieser Planet ist kurz, aber einer der traurigsten.</div>
+        <div class="lang-fr"><strong>Planète 3 – Le Buveur (327) :</strong> Le buveur boit pour oublier qu'il boit. Il l'admet lui-même. Le prince le trouve profondément triste, mais ne comprend pas la logique. Cette planète est courte mais l'une des plus mélancoliques.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">7</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Planet 4 – Le Businessman (328):</strong> Der Geschäftsmann zählt ununterbrochen Sterne und glaubt, sie zu "besitzen", weil er sie aufschreibt. Der Prinz fragt, was das den Sternen nützt. Keine Antwort. Für den Prinzen ist Besitzen nur sinnvoll, wenn man Verantwortung trägt, wie für seine Rose oder seine Vulkane.</div>
+        <div class="lang-fr"><strong>Planète 4 – Le Businessman (328) :</strong> L'homme d'affaires compte sans cesse les étoiles et croit les "posséder" parce qu'il les note. Le prince demande à quoi ça sert pour les étoiles. Pas de réponse. Pour le prince, posséder n'a de sens que si l'on prend ses responsabilités, comme pour sa rose ou ses volcans.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">8</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Planet 5 – L'Allumeur de réverbères (329):</strong> Der Laternenanzünder zündet und löscht seine Laterne jede Minute, weil sein Planet sich immer schneller dreht. Er folgt blind seinen Befehlen, obwohl es keinen Sinn mehr ergibt. Der Prinz findet ihn sympathischer als alle anderen, weil er wenigstens für etwas anderes als sich selbst arbeitet.</div>
+        <div class="lang-fr"><strong>Planète 5 – L'Allumeur de réverbères (329) :</strong> L'allumeur allume et éteint son réverbère chaque minute, car sa planète tourne de plus en plus vite. Il suit aveuglément ses ordres même si cela n'a plus de sens. Le prince le trouve plus sympathique que tous les autres, car il travaille au moins pour autre chose que lui-même.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">9</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Planet 6 – Le Géographe (330):</strong> Der Geograf schreibt riesige Bücher über Berge und Flüsse, hat aber seinen eigenen Planeten nie erkundet. Er braucht dafür "Entdecker". Er schickt den Prinzen zur Erde.</div>
+        <div class="lang-fr"><strong>Planète 6 – Le Géographe (330) :</strong> Le géographe écrit de grands livres sur les montagnes et les rivières, mais n'a jamais exploré sa propre planète. Il a besoin d'"explorateurs" pour cela. Il envoie le prince sur la Terre.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">10</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Ankunft auf der Erde – Die Schlange:</strong> Der Prinz landet in der Wüste und trifft sofort eine Schlange. Die Schlange spricht rätselhaft und sagt, sie könne jeden zurückschicken, woher er kam. Der Prinz versteht, dass sie den Tod meint, fragt aber nicht weiter nach. Die Schlange bleibt im Hintergrund, aber der Leser ahnt: Sie wird am Ende wichtig.</div>
+        <div class="lang-fr"><strong>Arrivée sur Terre – Le Serpent :</strong> Le prince atterrit dans le désert et rencontre aussitôt un serpent. Le serpent parle de manière énigmatique et dit pouvoir renvoyer n'importe qui d'où il vient. Le prince comprend qu'il parle de la mort, mais ne pose pas plus de questions. Le serpent reste en arrière-plan, mais le lecteur devine qu'il sera important à la fin.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">11</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Der Rosengarten:</strong> Der Prinz findet einen Garten mit fünftausend Rosen. Er bricht in Tränen aus, weil er dachte, seine Rose sei einzigartig auf der ganzen Welt. Jetzt sieht er, dass sie eine gewöhnliche Rose ist. Er fühlt sich arm und betrogen.</div>
+        <div class="lang-fr"><strong>Le jardin de roses :</strong> Le prince découvre un jardin avec cinq mille roses. Il fond en larmes, car il croyait sa rose unique au monde. Il réalise maintenant qu'elle est une rose ordinaire. Il se sent pauvre et trahi.</div>
+      </div>
+    </div>
+
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">12</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Der Fuchs – die wichtigste Lektion:</strong> Der Fuchs erscheint und bittet den Prinzen, ihn zu "apprivoiser" (zähmen). Er erklärt: Zähmen bedeutet, eine einzigartige Verbindung herzustellen. Vorher ist der Fuchs für den Prinzen nur ein Fuchs wie alle anderen. Danach ist er der einzige Fuchs der Welt. Der Fuchs sagt: <em>"Tu deviens responsable pour toujours de ce que tu as apprivoisé."</em> Durch diese Lektion versteht der Prinz: Seine Rose ist einzigartig, nicht weil sie die schönste ist, sondern weil er Zeit, Fürsorge und Verantwortung in sie investiert hat.</div>
+        <div class="lang-fr"><strong>Le Renard – la leçon essentielle :</strong> Le renard apparaît et demande au prince de l'"apprivoiser". Il explique : apprivoiser signifie créer un lien unique. Avant, le renard n'est pour le prince qu'un renard comme les autres. Après, il sera le seul renard du monde. Le renard dit : <em>"Tu deviens responsable pour toujours de ce que tu as apprivoisé."</em> Grâce à cette leçon, le prince comprend : sa rose est unique non pas parce qu'elle est la plus belle, mais parce qu'il a investi du temps, des soins et de la responsabilité en elle.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     2. PLANETEN
+     ══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title">
+    <span class="de-block">Die Planeten (Asteroide 325–330)</span>
+    <span class="fr-block">Les Planètes (Astéroïdes 325–330)</span>
+  </div>
+  <div class="planets-grid">
+
+    <div class="planet-card bi" data-num="1" onclick="toggleCard(this)">
+      <div class="planet-name">Astéroïde 325</div>
+      <div class="planet-who">Le roi</div>
+      <div class="lang-de"><p>Ein König, der über alles herrschen will, aber nur Befehle gibt, die sowieso befolgt würden.</p><div class="lecon">Kritik an sinnloser Machtgier</div></div>
+      <div class="lang-fr"><p>Un roi qui veut tout gouverner, mais ne donne que des ordres qui seraient de toute façon suivis.</p><div class="lecon">Critique du pouvoir absurde</div></div>
+    </div>
+
+    <div class="planet-card bi" data-num="2" onclick="toggleCard(this)">
+      <div class="planet-name">Astéroïde 326</div>
+      <div class="planet-who">Le vaniteux</div>
+      <div class="lang-de"><p>Ein Eitler, der nur Bewunderung braucht. Hört nichts außer Applaus.</p><div class="lecon">Kritik an Eitelkeit &amp; Selbstbezogenheit</div></div>
+      <div class="lang-fr"><p>Un vaniteux qui n'a besoin que d'admiration. N'entend rien d'autre que les applaudissements.</p><div class="lecon">Critique de la vanité et de l'égocentrisme</div></div>
+    </div>
+
+    <div class="planet-card bi" data-num="3" onclick="toggleCard(this)">
+      <div class="planet-name">Astéroïde 327</div>
+      <div class="planet-who">Le buveur</div>
+      <div class="lang-de"><p>Ein Trinker, der trinkt, um zu vergessen, dass er trinkt. Ein trauriger Kreislauf.</p><div class="lecon">Kritik an Selbstbetrug &amp; Sucht</div></div>
+      <div class="lang-fr"><p>Un buveur qui boit pour oublier qu'il boit. Un cercle vicieux triste.</p><div class="lecon">Critique de l'autodestruction et de l'addiction</div></div>
+    </div>
+
+    <div class="planet-card bi" data-num="4" onclick="toggleCard(this)">
+      <div class="planet-name">Astéroïde 328</div>
+      <div class="planet-who">Le businessman</div>
+      <div class="lang-de"><p>Zählt ständig Sterne und "besitzt" sie. Hat keine Zeit für Gespräche.</p><div class="lecon">Kritik an Materialismus &amp; Profitdenken</div></div>
+      <div class="lang-fr"><p>Compte sans cesse les étoiles et les "possède". Pas de temps pour les conversations.</p><div class="lecon">Critique du matérialisme et de la cupidité</div></div>
+    </div>
+
+    <div class="planet-card bi" data-num="5" onclick="toggleCard(this)">
+      <div class="planet-name">Astéroïde 329</div>
+      <div class="planet-who">L'allumeur de réverbères</div>
+      <div class="lang-de"><p>Zündet und löscht jede Minute eine Laterne. Folgt blind seiner Pflicht, obwohl es sinnlos ist.</p><div class="lecon">Kritik an blindem Pflichtgehorsam, aber auch Sympathie</div></div>
+      <div class="lang-fr"><p>Allume et éteint un réverbère chaque minute. Suit aveuglément son devoir même si c'est absurde.</p><div class="lecon">Critique de l'obéissance aveugle, mais aussi sympathie</div></div>
+    </div>
+
+    <div class="planet-card bi" data-num="6" onclick="toggleCard(this)">
+      <div class="planet-name">Astéroïde 330</div>
+      <div class="planet-who">Le géographe</div>
+      <div class="lang-de"><p>Schreibt Bücher, erkundet aber nie selbst. Schickt den Prinzen zur Erde.</p><div class="lecon">Kritik an realitätsferner Wissenschaft</div></div>
+      <div class="lang-fr"><p>Écrit des livres mais n'explore jamais lui-même. Envoie le prince sur Terre.</p><div class="lecon">Critique de la science déconnectée de la réalité</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     3. CARACTÉRISATION SCHREIBEN
+     ══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title">
+    <span class="de-block">Wie man eine Caractérisation schreibt</span>
+    <span class="fr-block">Comment écrire une caractérisation</span>
+  </div>
+  <div class="caract-steps">
+
+    <div class="caract-step bi" onclick="toggleCard(this)">
+      <div class="caract-num">1</div>
+      <div class="caract-text">
+        <div class="lang-de"><strong>Introduction:</strong> Figur vorstellen. Name, Ort, wann sie auftritt.<br><em>Beispiel: "La rose est le personnage central de l'astéroïde B 612."</em></div>
+        <div class="lang-fr"><strong>Introduction :</strong> Présenter le personnage. Nom, lieu, moment d'apparition.<br><em>Exemple : "La rose est le personnage central de l'astéroïde B 612."</em></div>
+      </div>
+    </div>
+
+    <div class="caract-step bi" onclick="toggleCard(this)">
+      <div class="caract-num">2</div>
+      <div class="caract-text">
+        <div class="lang-de"><strong>Äußere Beschreibung</strong> (falls relevant): Wie sieht die Figur aus? Was fällt auf?<br><em>Beispiel: "La rose est belle, avec quatre épines pour se défendre."</em></div>
+        <div class="lang-fr"><strong>Description physique</strong> (si pertinent) : À quoi ressemble le personnage ?<br><em>Exemple : "La rose est belle, avec quatre épines pour se défendre."</em></div>
+      </div>
+    </div>
+
+    <div class="caract-step bi" onclick="toggleCard(this)">
+      <div class="caract-num">3</div>
+      <div class="caract-text">
+        <div class="lang-de"><strong>Charaktereigenschaften:</strong> Welche Eigenschaften hat die Figur? Immer mit einer konkreten Handlung oder Aussage aus dem Text belegen.<br><em>Beispiel: "Elle est vaniteuse: elle affirme être unique au monde, ce qui n'est pas vrai."</em></div>
+        <div class="lang-fr"><strong>Traits de caractère :</strong> Quelles sont les qualités ou les défauts du personnage ? Toujours justifier avec une action ou une citation du texte.<br><em>Exemple : "Elle est vaniteuse : elle affirme être unique au monde, ce qui n'est pas vrai."</em></div>
+      </div>
+    </div>
+
+    <div class="caract-step bi" onclick="toggleCard(this)">
+      <div class="caract-num">4</div>
+      <div class="caract-text">
+        <div class="lang-de"><strong>Beziehungen zu anderen Figuren:</strong> Wie verhält sich die Figur gegenüber dem Prinzen oder anderen?<br><em>Beispiel: "Elle aime le prince mais ne le montre pas, ce qui le fait souffrir."</em></div>
+        <div class="lang-fr"><strong>Relations avec les autres personnages :</strong> Comment se comporte-t-elle envers le prince ou les autres ?<br><em>Exemple : "Elle aime le prince mais ne le montre pas, ce qui le fait souffrir."</em></div>
+      </div>
+    </div>
+
+    <div class="caract-step bi" onclick="toggleCard(this)">
+      <div class="caract-num">5</div>
+      <div class="caract-text">
+        <div class="lang-de"><strong>Symbolische Bedeutung / Conclusion:</strong> Wofür steht die Figur im Roman? Was will der Autor damit sagen?<br><em>Beispiel: "La rose symbolise l'amour imparfait mais précieux."</em></div>
+        <div class="lang-fr"><strong>Signification symbolique / Conclusion :</strong> Que représente le personnage dans le roman ? Que veut dire l'auteur ?<br><em>Exemple : "La rose symbolise l'amour imparfait mais précieux."</em></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROSE BEISPIEL -->
+  <div style="margin-top:1rem;">
+    <div class="section-title" style="font-size:0.95rem;">
+      <span class="de-block">Beispiel: Caractérisation de la Rose (Fließtext)</span>
+      <span class="fr-block">Exemple : Caractérisation de la Rose (texte continu)</span>
+    </div>
+    <div class="rose-block bi" onclick="toggleCard(this)">
+      <div class="lang-de">
+        <p>La rose est l'un des personnages les plus importants du <em>Petit Prince</em>. Elle habite sur l'astéroïde B 612, la planète natale du petit prince, et représente le grand amour de sa vie.</p>
+        <br>
+        <p>Au premier regard, la rose est un personnage difficile. Elle est <strong>vaniteuse</strong> et croit être unique au monde, ce qui se révèle faux quand le prince découvre un jardin entier rempli de roses. Elle est également <strong>capricieuse</strong> : elle réclame une cloche de verre, se plaint du vent et exige sans cesse des attentions. Son <strong>orgueil</strong> est si grand qu'elle ne montre jamais sa vraie nature.</p>
+        <br>
+        <p>Pourtant, derrière cette façade arrogante se cache un personnage profondément <strong>fragile</strong> et <strong>aimant</strong>. Quand le prince s'apprête à partir, elle lui avoue doucement qu'elle l'aime et qu'elle a eu tort d'être si difficile.</p>
+        <br>
+        <p>Sur le plan symbolique, la rose représente l'amour humain dans toute sa complexité. Elle n'est ni parfaite ni facile, mais elle est précieuse précisément parce qu'elle est imparfaite. Saint-Exupéry montre que les relations authentiques demandent de la patience, de la tolérance et de la responsabilité.</p>
+      </div>
+      <div class="lang-fr">
+        <p>La rose est l'un des personnages les plus importants du <em>Petit Prince</em>. Elle habite sur l'astéroïde B 612, la planète natale du petit prince, et représente le grand amour de sa vie.</p>
+        <br>
+        <p>Au premier regard, la rose est un personnage difficile. Elle est <strong>vaniteuse</strong> et croit être unique au monde, ce qui se révèle faux quand le prince découvre un jardin entier rempli de roses. Elle est également <strong>capricieuse</strong> : elle réclame une cloche de verre, se plaint du vent et exige sans cesse des attentions. Son <strong>orgueil</strong> est si grand qu'elle ne montre jamais sa vraie nature.</p>
+        <br>
+        <p>Pourtant, derrière cette façade arrogante se cache un personnage profondément <strong>fragile</strong> et <strong>aimant</strong>. Quand le prince s'apprête à partir, elle lui avoue doucement qu'elle l'aime et qu'elle a eu tort d'être si difficile.</p>
+        <br>
+        <p>Sur le plan symbolique, la rose représente l'amour humain dans toute sa complexité. Elle n'est ni parfaite ni facile, mais elle est précieuse précisément parce qu'elle est imparfaite. Saint-Exupéry montre que les relations authentiques demandent de la patience, de la tolérance et de la responsabilité.</p>
+      </div>
+    </div>
+    <div class="tip-box bi" onclick="toggleCard(this)">
+      <strong><span class="de-block">Schlüsselzitat</span><span class="fr-block">Citation clé</span></strong>
+      "On ne voit bien qu'avec le cœur. L'essentiel est invisible pour les yeux."
+      <br><span style="font-size:0.75rem;color:var(--muted);">— Le Renard au Petit Prince</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     4. PERSONNES – EIGENSCHAFTEN
+     ══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title">
+    <span class="de-block">Caractérisation: Figuren &amp; Eigenschaften</span>
+    <span class="fr-block">Caractérisation : personnages &amp; traits</span>
+  </div>
+  <div class="char-list">
+
+    <div class="char-card bi" onclick="toggleCard(this)">
+      <div class="char-name">Le Petit Prince</div>
+      <div class="lang-de">
+        <ul>
+          <li>Kind, neugierig, direkt</li>
+          <li>Stellt immer Fragen</li>
+          <li>Sieht die Welt mit Kinderaugen</li>
+          <li>Liebt seine Rose trotz allem</li>
+          <li>Verlässt Heimat aus Einsamkeit</li>
+          <li>Symbol: Unschuld &amp; echte Gefühle</li>
+        </ul>
+      </div>
+      <div class="lang-fr">
+        <ul>
+          <li>curieux, sincère, sensible</li>
+          <li>naïf, pur, solitaire</li>
+          <li>pose toujours des questions</li>
+          <li>voit le monde avec des yeux d'enfant</li>
+          <li>aime sa rose malgré tout</li>
+          <li>Symbole : innocence et émotions vraies</li>
+        </ul>
+        <div class="char-traits-fr">curieux · sincère · sensible · naïf · pur · solitaire · aimant · direct</div>
+      </div>
+    </div>
+
+    <div class="char-card bi" onclick="toggleCard(this)">
+      <div class="char-name">La Rose</div>
+      <div class="lang-de">
+        <ul>
+          <li>Eitel, kapriziös, stolz</li>
+          <li>Lügt über ihre Schwäche</li>
+          <li>Liebt den Prinzen, zeigt es nicht</li>
+          <li>Am Ende ehrlich und verletzbar</li>
+          <li>Symbol: komplizierte, echte Liebe</li>
+        </ul>
+      </div>
+      <div class="lang-fr">
+        <ul>
+          <li>vaniteuse, capricieuse, orgueilleuse</li>
+          <li>ment sur sa faiblesse</li>
+          <li>aime le prince mais ne le montre pas</li>
+          <li>finalement honnête et vulnérable</li>
+          <li>Symbole : amour compliqué mais précieux</li>
+        </ul>
+        <div class="char-traits-fr">vaniteuse · capricieuse · orgueilleuse · fragile · aimante · mensongère</div>
+      </div>
+    </div>
+
+    <div class="char-card bi" onclick="toggleCard(this)">
+      <div class="char-name">Le Narrateur</div>
+      <div class="lang-de">
+        <ul>
+          <li>Erwachsener, aber noch offen</li>
+          <li>Einsam, rationell geworden</li>
+          <li>Erkennt sich im Prinzen wieder</li>
+          <li>Zeichner, Pilot</li>
+          <li>Symbol: verlorene Kindheit</li>
+        </ul>
+      </div>
+      <div class="lang-fr">
+        <ul>
+          <li>adulte mais encore ouvert d'esprit</li>
+          <li>solitaire, devenu rationnel</li>
+          <li>se reconnaît dans le prince</li>
+          <li>dessinateur, pilote</li>
+          <li>Symbole : enfance perdue</li>
+        </ul>
+        <div class="char-traits-fr">nostalgique · solitaire · ouvert d'esprit · imaginatif · incompris</div>
+      </div>
+    </div>
+
+    <div class="char-card bi" onclick="toggleCard(this)">
+      <div class="char-name">Le Renard</div>
+      <div class="lang-de">
+        <ul>
+          <li>Weise, geduldig, philosophisch</li>
+          <li>Lehrt "apprivoiser" (zähmen)</li>
+          <li>Erklärt echte Freundschaft</li>
+          <li>Symbol: echte Verbindung &amp; Verantwortung</li>
+        </ul>
+      </div>
+      <div class="lang-fr">
+        <ul>
+          <li>sage, patient, philosophique</li>
+          <li>enseigne le concept d'"apprivoiser"</li>
+          <li>explique ce qu'est la vraie amitié</li>
+          <li>Symbole : lien authentique et responsabilité</li>
+        </ul>
+        <div class="char-traits-fr">sage · patient · philosophique · bienveillant</div>
+      </div>
+    </div>
+
+    <div class="char-card bi" onclick="toggleCard(this)">
+      <div class="char-name">Le Serpent</div>
+      <div class="lang-de">
+        <ul>
+          <li>Rätselhaft, gefährlich</li>
+          <li>Spricht in Rätseln</li>
+          <li>Bietet Rückkehr an (= Tod)</li>
+          <li>Beißt den Prinzen am Ende</li>
+          <li>Symbol: Vergänglichkeit, Rückkehr</li>
+        </ul>
+      </div>
+      <div class="lang-fr">
+        <ul>
+          <li>mystérieux, dangereux</li>
+          <li>parle par énigmes</li>
+          <li>offre un "retour" (= la mort)</li>
+          <li>mord le prince à la fin</li>
+          <li>Symbole : mort, retour aux origines</li>
+        </ul>
+        <div class="char-traits-fr">mystérieux · énigmatique · dangereux · sage à sa façon</div>
+      </div>
+    </div>
+
+    <div class="char-card bi" onclick="toggleCard(this)">
+      <div class="char-name">Le Géographe</div>
+      <div class="lang-de">
+        <ul>
+          <li>Theoretiker ohne Praxis</li>
+          <li>Hat seinen Planeten nie erkundet</li>
+          <li>Schickt Prinzen zur Erde</li>
+          <li>Symbol: weltfremde Bildung</li>
+        </ul>
+      </div>
+      <div class="lang-fr">
+        <ul>
+          <li>théoricien sans pratique</li>
+          <li>n'a jamais exploré sa propre planète</li>
+          <li>envoie le prince sur Terre</li>
+          <li>Symbole : savoir déconnecté de la réalité</li>
+        </ul>
+        <div class="char-traits-fr">théorique · distant · peu curieux du monde réel</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     5. RÉSUMÉ SCHREIBEN
+     ══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title">
+    <span class="de-block">Résumé schreiben: Aufbau &amp; Tipps</span>
+    <span class="fr-block">Écrire un résumé : structure &amp; conseils</span>
+  </div>
+  <div class="step-list">
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">1</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Introduction:</strong> Titel, Autor, Genre nennen.<br><em>"Le Petit Prince est un roman philosophique écrit par Antoine de Saint-Exupéry en 1943."</em></div>
+        <div class="lang-fr"><strong>Introduction :</strong> Mentionner le titre, l'auteur, le genre.<br><em>"Le Petit Prince est un roman philosophique écrit par Antoine de Saint-Exupéry en 1943."</em></div>
+      </div>
+    </div>
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">2</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Situation initiale:</strong> Der Pilot landet in der Wüste und trifft den kleinen Prinzen, der ein Schaf möchte.</div>
+        <div class="lang-fr"><strong>Situation initiale :</strong> Le pilote atterrit dans le désert et rencontre le petit prince, qui veut un mouton.</div>
+      </div>
+    </div>
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">3</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Planeten-Reise:</strong> Der Prinz hat seinen Asteroiden verlassen und sechs Planeten besucht, auf denen er seltsame Erwachsene traf. Jeden Planeten kurz zusammenfassen.</div>
+        <div class="lang-fr"><strong>Voyage sur les planètes :</strong> Le prince a quitté son astéroïde et visité six planètes où il a rencontré d'étranges adultes. Résumer brièvement chaque planète.</div>
+      </div>
+    </div>
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">4</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Ankunft auf der Erde:</strong> Begegnung mit Schlange, Rosen-Garten, und dem Fuchs. Lektion über "apprivoiser" und echte Werte.</div>
+        <div class="lang-fr"><strong>Arrivée sur Terre :</strong> Rencontre avec le serpent, le jardin de roses et le renard. Leçon sur "apprivoiser" et les vraies valeurs.</div>
+      </div>
+    </div>
+    <div class="step bi" onclick="toggleCard(this)">
+      <div class="step-num">5</div>
+      <div class="step-text">
+        <div class="lang-de"><strong>Temps:</strong> Présent oder Passé composé + Imparfait. Kein Futur im Résumé. Kein persönliches Urteil, keine Zitate, nur eigene Worte.</div>
+        <div class="lang-fr"><strong>Temps :</strong> Présent ou passé composé + imparfait. Pas de futur dans un résumé. Pas de jugement personnel, pas de citations, seulement ses propres mots.</div>
+      </div>
+    </div>
+  </div>
+  <div class="tip-box bi" onclick="toggleCard(this)">
+    <strong><span class="de-block">Achtung beim Résumé</span><span class="fr-block">Attention pour le résumé</span></strong>
+    <span class="de-block">Kein persönliches Urteil. Keine Meinung. Nur das Geschehene in eigenen Worten. Kurze, klare Sätze. Keine wörtlichen Zitate aus dem Text.</span>
+    <span class="fr-block">Pas de jugement personnel. Pas d'opinion. Seulement les faits dans ses propres mots. Phrases courtes et claires. Pas de citations directes du texte.</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     6. THEMEN
+     ══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title">Thèmes principaux</div>
+  <div class="themes-list">
+    <span class="theme-tag bi" onclick="toggleCard(this)">
+      <span class="lang-de">Kindheit vs. Erwachsene</span>
+      <span class="lang-fr">L'enfance vs. les adultes</span>
+    </span>
+    <span class="theme-tag bi" onclick="toggleCard(this)">
+      <span class="lang-de">Liebe &amp; Verantwortung</span>
+      <span class="lang-fr">L'amour et la responsabilité</span>
+    </span>
+    <span class="theme-tag bi" onclick="toggleCard(this)">
+      <span class="lang-de">Einsamkeit</span>
+      <span class="lang-fr">La solitude</span>
+    </span>
+    <span class="theme-tag bi" onclick="toggleCard(this)">
+      <span class="lang-de">Materialismus</span>
+      <span class="lang-fr">Le matérialisme</span>
+    </span>
+    <span class="theme-tag bi" onclick="toggleCard(this)">
+      <span class="lang-de">Freundschaft</span>
+      <span class="lang-fr">L'amitié</span>
+    </span>
+    <span class="theme-tag bi" onclick="toggleCard(this)">
+      <span class="lang-de">Das Wesentliche</span>
+      <span class="lang-fr">Ce qui est essentiel</span>
+    </span>
+    <span class="theme-tag bi" onclick="toggleCard(this)">
+      <span class="lang-de">Tod &amp; Rückkehr</span>
+      <span class="lang-fr">La mort et le retour</span>
+    </span>
+    <span class="theme-tag bi" onclick="toggleCard(this)">
+      <span class="lang-de">Eitelkeit der Erwachsenen</span>
+      <span class="lang-fr">La vanité des adultes</span>
+    </span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     7. VOKABULAR
+     ══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-title">
+    <span class="de-block">Nützliches Vokabular für die Klausur</span>
+    <span class="fr-block">Vocabulaire utile pour l'examen</span>
+  </div>
+  <div class="vocab-grid">
+    <div class="vocab-item"><span class="vocab-fr">apprivoiser</span><br><span class="vocab-de">zähmen, vertraut machen</span></div>
+    <div class="vocab-item"><span class="vocab-fr">l'essentiel</span><br><span class="vocab-de">das Wesentliche</span></div>
+    <div class="vocab-item"><span class="vocab-fr">le narrateur</span><br><span class="vocab-de">der Erzähler</span></div>
+    <div class="vocab-item"><span class="vocab-fr">la vanité</span><br><span class="vocab-de">die Eitelkeit</span></div>
+    <div class="vocab-item"><span class="vocab-fr">responsable</span><br><span class="vocab-de">verantwortlich</span></div>
+    <div class="vocab-item"><span class="vocab-fr">capricieux/-se</span><br><span class="vocab-de">launisch, kapriziös</span></div>
+    <div class="vocab-item"><span class="vocab-fr">unique</span><br><span class="vocab-de">einzigartig</span></div>
+    <div class="vocab-item"><span class="vocab-fr">symboliser</span><br><span class="vocab-de">symbolisieren</span></div>
+    <div class="vocab-item"><span class="vocab-fr">représenter</span><br><span class="vocab-de">darstellen, vertreten</span></div>
+    <div class="vocab-item"><span class="vocab-fr">critiquer</span><br><span class="vocab-de">kritisieren</span></div>
+    <div class="vocab-item"><span class="vocab-fr">le personnage</span><br><span class="vocab-de">die Figur / Person</span></div>
+    <div class="vocab-item"><span class="vocab-fr">caractériser</span><br><span class="vocab-de">charakterisieren</span></div>
+    <div class="vocab-item"><span class="vocab-fr">orgueilleuse/-eux</span><br><span class="vocab-de">stolz, hochmütig</span></div>
+    <div class="vocab-item"><span class="vocab-fr">fragile</span><br><span class="vocab-de">zerbrechlich, verletzlich</span></div>
+    <div class="vocab-item"><span class="vocab-fr">naïf / naïve</span><br><span class="vocab-de">naiv, unschuldig</span></div>
+    <div class="vocab-item"><span class="vocab-fr">bienveillant/-e</span><br><span class="vocab-de">wohlwollend, gütig</span></div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+  var globalFr = false;
+
+  function toggleLang() {
+    globalFr = !globalFr;
+    document.body.classList.toggle('fr', globalFr);
+    document.getElementById('globalBtn').textContent = globalFr ? '🇩🇪 Alles auf Deutsch' : '🇫🇷 Tout en français';
+  }
+
+  function toggleCard(el) {
+    // Toggle individual card between DE and FR regardless of global state
+    var dEl = el.querySelector('.lang-de');
+    var fEl = el.querySelector('.lang-fr');
+    if (!dEl || !fEl) return;
+
+    // Check current visible state
+    var deVisible = window.getComputedStyle(dEl).display !== 'none';
+    if (deVisible) {
+      dEl.style.display = 'none';
+      fEl.style.display = 'block';
+    } else {
+      dEl.style.display = 'block';
+      fEl.style.display = 'none';
+    }
+    // Prevent global toggle from overriding inline style
+    el.dataset.overridden = '1';
+  }
+</script>
+</body>
+</html>
